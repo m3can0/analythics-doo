@@ -2,6 +2,7 @@ package com.napp.analythicsdoo
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import kotlinx.coroutines.runBlocking
 
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -14,11 +15,17 @@ import org.junit.Assert.*
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 @RunWith(AndroidJUnit4::class)
-class ExampleInstrumentedTest {
+class RepositoryTest {
+
+    private val repository: Repository = Repository.build()
+
     @Test
-    fun useAppContext() {
-        // Context of the app under test.
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.napp.analythicsdoo", appContext.packageName)
+    fun getDefunktTest() {
+        runBlocking {
+            val result = repository.call(IRepo::class.java) {
+                it.getUserRepoList()
+            }
+            assertEquals(User( "defunkt", 2), result)
+        }
     }
 }
