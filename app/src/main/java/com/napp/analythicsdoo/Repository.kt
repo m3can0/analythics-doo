@@ -5,6 +5,8 @@ import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Path
+import retrofit2.http.Query
 import kotlin.coroutines.*
 
 
@@ -14,7 +16,7 @@ class Repository(private val retrofit: Retrofit) {
         private const val BASE_URL = "https://api.github.com"
 
         fun build(): Repository {
-            val client = OkHttpClient.Builder().apply{
+            val client = OkHttpClient.Builder().apply {
                 addInterceptor(tokenHeaderInterceptor(BuildConfig.GITLAB_TOKEN))
             }.build()
 
@@ -38,4 +40,24 @@ class NetworkException(val code: Int) : Exception()
 interface IRepo {
     @GET("user/repos")
     fun getUserRepoList(): Call<List<Repo>>
+}
+
+interface IPulls {
+    @GET("/repos/{owner}/{repo}/pulls")
+    fun getPullRequestList(
+        @Path("owner") owner: String,
+        @Path("repo") repo: String,
+        @Query("page") page: Int = 1,
+        @Query("per_page") perPage: Int = 100,
+        @Query("state") state: String = "closed" // open, closed, all
+    ): Call<List<PullRequest>>
+
+    @GET("/repos/{owner}/{repo}/pulls/{pull_number}/comments")
+    fun getPullRequestCommentList(
+        @Path("owner") owner: String,
+        @Path("repo") repo: String,
+        @Path("pull_number") pullRequestId: Int,
+        @Query("page") page: Int = 1,
+        @Query("per_page") perPage: Int = 100
+    ): Call<List<PullRequestComment>>
 }
