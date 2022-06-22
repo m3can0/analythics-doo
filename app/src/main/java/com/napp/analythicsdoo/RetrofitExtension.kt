@@ -28,6 +28,7 @@ internal fun tokenHeaderInterceptor(token :String) = Interceptor { chain ->
     val request: Request = chain.request().let { original ->
         original.newBuilder().apply {
             header("Authorization", "token $token")
+            header("accept", "application/vnd.github.v3+json")
             method(original.method(), original.body())
         }.build()
     }
